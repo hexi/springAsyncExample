@@ -1,4 +1,4 @@
-package com.hexi;
+package com.hexi.controller;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.collect.Lists;
+import com.hexi.model.Person;
 
 @RestController
 public class Index {

@@ -1,4 +1,4 @@
-package com.hexi;
+package com.hexi.model;
 
 import java.io.Serializable;
 

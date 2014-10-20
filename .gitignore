@@ -5,4 +5,5 @@ product
 TestSpringWebmvc.iml
 ${buildDirectory}
 target
+mpsmodel.log
 WebContent/WEB-INF/lib
