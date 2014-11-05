@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:flex="http://www.springframework.org/schema/flex"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:flex="http://www.springframework.org/schema/flex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/aop
 		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
 		http://www.springframework.org/schema/beans
@@ -13,49 +14,24 @@
 		http://www.springframework.org/schema/tx
 		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" >
-        <property name="messageConverters">
-             <list>
-                 <bean class = "org.springframework.http.converter.StringHttpMessageConverter">
-                    <property name = "supportedMediaTypes">
-                         <list>
-                            <value>text/plain;charset=UTF-8</value>
-                        </list>
-                   </property>
-                </bean>
-                <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
-            </list>
-       </property>
-   </bean>
-   <bean id="jacksonObjectMapper" class="org.codehaus.jackson.map.ObjectMapper" />
-	<bean id="jacksonSerializationConfig" class="org.codehaus.jackson.map.SerializationConfig"
-		factory-bean="jacksonObjectMapper" factory-method="getSerializationConfig" />
-		
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject" ref="jacksonSerializationConfig" />
-		<property name="targetMethod" value="setSerializationInclusion" />
-		<property name="arguments">
+	<!-- Configure to plugin JSON as request and response in method handler -->
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
 			<list>
-				<value type="org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion">NON_NULL</value>
+				<ref bean="jsonMessageConverter" />
 			</list>
 		</property>
 	</bean>
-	
-	<bean id="jacksonDeserializationConfig" class="org.codehaus.jackson.map.DeserializationConfig"
-		factory-bean="jacksonObjectMapper" factory-method="getDeserializationConfig" />
-	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject" ref="jacksonDeserializationConfig" />
-		<property name="targetMethod" value="set" />
-		<property name="arguments">
-			<list>
-				<value type="org.codehaus.jackson.map.DeserializationConfig.Feature">FAIL_ON_UNKNOWN_PROPERTIES</value>
-				<value>false</value>
-			</list>
-		</property>
+
+	<!-- Configure bean to convert JSON to POJO and vice versa -->
+	<bean id="jsonMessageConverter"	class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="objectMapper" ref="jacksonObjectMapper" />
 	</bean>
+	<bean id="jacksonObjectMapper" class="com.hexi.util.MyObjectMapper" />
 	
 	<mvc:annotation-driven>
-		 <mvc:async-support default-timeout="3000"/>
+		<mvc:async-support default-timeout="3000" />
 	</mvc:annotation-driven>
 	<context:component-scan base-package="com.hexi" />
 	<!-- 导入属性配置文件 -->
@@ -63,11 +39,12 @@
 
 	<bean class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename">
-			 <value>messages</value>
+			<value>messages</value>
 		</property>
 	</bean>
 
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/pages/" />
 		<property name="suffix" value=".jsp" />
 	</bean>
